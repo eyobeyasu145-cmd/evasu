@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { UserPlus, Shield, CheckCircle2, AlertCircle } from 'lucide-react';
+import { UserPlus, Shield, CheckCircle2, AlertCircle, Phone, Fingerprint, MapPin, GraduationCap } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import evasuLogo from '../assets/evasu.jpg';
 
 const API_URL = 'http://127.0.0.1:5000/api';
 
@@ -60,12 +61,22 @@ export default function Register() {
                     </Link>
                 </div>
 
-                <div className="text-center mb-6 mt-4">
-                    <div style={{ display: 'inline-flex', padding: '1rem', background: 'var(--primary-color)', borderRadius: '50%', color: 'white', marginBottom: '1rem' }}>
-                        <UserPlus size={32} />
-                    </div>
-                    <h1>EVASU Registration</h1>
-                    <p style={{ color: 'var(--text-secondary)' }}>Join our vibrant community by filling in your details below.</p>
+                <div className="text-center mb-6">
+                    <img
+                        src={evasuLogo}
+                        alt="EVASU Logo"
+                        style={{
+                            width: '100px',
+                            height: '100px',
+                            borderRadius: '50%',
+                            objectFit: 'cover',
+                            border: '4px solid white',
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                            marginBottom: '1rem'
+                        }}
+                    />
+                    <h1>EVASU Community</h1>
+                    <p style={{ color: 'var(--text-secondary)' }}>Welcome to the official registration portal.</p>
                 </div>
 
                 {status.message && (

@@ -38,7 +38,35 @@ app.post('/api/members/register', async (req, res) => {
         res.status(201).json({ message: 'Registration successful!', member: result.rows[0] });
     } catch (error) {
         console.error('Registration Error:', error);
-        res.status(500).json({ error: 'Failed to register. Please ensure all fields are correct.' });
+
+        // Handle Duplicate Violations (Postgres code 23505)
+        if (error.code === '23505') {
+            const detail = error.detail || '';
+            if (detail.includes('university_id')) {
+                return res.status(400).json({ error: 'This University ID is already registered.' });
+            }
+            if (detail.includes('phone_number')) {
+                return res.status(400).json({ error: 'This Phone Number is already registered.' });
+            }
+
+            // Fallback: Manually check if the above didn't catch it
+            try {
+                const checkUniv = await db.query('SELECT 1 FROM members WHERE university_id = $1', [req.body.university_id]);
+                if (checkUniv.rows.length > 0) return res.status(400).json({ error: 'This University ID already exists.' });
+
+                const checkPhone = await db.query('SELECT 1 FROM members WHERE phone_number = $1', [req.body.phone_number]);
+                if (checkPhone.rows.length > 0) return res.status(400).json({ error: 'This Phone Number already exists.' });
+            } catch (e) { /* ignore secondary check errors */ }
+
+            return res.status(400).json({ error: 'A member with this ID or Phone already exists.' });
+        }
+
+        // Handle other specific errors
+        if (error.code === '23502') { // Not null violation
+            return res.status(400).json({ error: `Missing required field: ${error.column}` });
+        }
+
+        res.status(500).json({ error: 'Registration failed: ' + (error.message || 'Unknown database error') });
     }
 });
 
@@ -117,3 +145,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+// Trigger restart
