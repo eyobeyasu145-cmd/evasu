@@ -1,0 +1,31 @@
+# 📝 EVASU Project Task List
+
+## 1. Planning & Setup
+- [ ] Create 'frontend' React Vite project
+- [ ] Create 'backend' Node.js Express project
+- [ ] Initialize PostgreSQL Database with the schema
+
+## 2. Backend Implementation (Express & PostgreSQL)
+- [ ] Setup `server.js` with Express, CORS, and Body-Parser
+- [ ] Add Database connection using `pg`
+- [ ] Endpoints for Registration (Public)
+  - [ ] `POST /api/members/register` 
+- [ ] Endpoints for Leaders (Secured)
+  - [ ] `POST /api/auth/login` (Leader Login)
+  - [ ] `GET /api/members` (Fetch all members with Leader Auth)
+
+## 3. Frontend Implementation (React)
+- [ ] Setup Routing (`react-router-dom`)
+- [ ] Create Public Registration Page (`/`)
+  - [ ] Premium design form for students (Vibrant, accessible)
+  - [ ] Success/Error notifications
+- [ ] Create Leader Login Page (`/leader-login`)
+- [ ] Create Secured Leader Dashboard (`/dashboard`)
+  - [ ] Fetch & Display all members in a beautiful table
+  - [ ] Role-based protection (Redirect if not logged in)
+
+## 4. Verification & Deployment Prep
+- [ ] Test Backend API connection
+- [ ] Test Frontend Form Submission
+- [ ] Test Auth constraints
+- [ ] Render configuration & Scripts (`package.json`)

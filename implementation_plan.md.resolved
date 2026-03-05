@@ -1,0 +1,36 @@
+# EVASU Application Implementation Plan
+
+This document outlines the architecture and approach for implementing the EVASU member management full-stack application.
+
+## User Review Required
+> [!IMPORTANT]
+> Since we are creating a project from scratch, please confirm if the use of **Vite + React** for the frontend and **Express + pg** for the backend is acceptable. I will configure the project to easily deploy as two separate web services on Render, or as a monorepo depending on your preference (I plan to use separate `/frontend` and `/backend` folders).
+> **Are you okay with this structure?**
+
+## Proposed Changes
+
+We will create two main directories inside your workspace `c:\Users\eyobe\vscode\evasu`:
+
+### Backend API (Node.js + Express)
+- Initialize a `package.json` with dependencies: `express`, `pg`, `cors`, `dotenv`, `jsonwebtoken`.
+- Create a `server.js` file that connects to your PostgreSQL database.
+- Implement the following routes:
+  1. `POST /api/register`: For the public to register.
+  2. `POST /api/login`: For leaders to get an access token.
+  3. `GET /api/members`: Protected route returning the list of members.
+
+### Frontend App (React + Vite)
+- Initialize a Vite React project.
+- Install dependencies: `react-router-dom`, `lucide-react` (for icons).
+- Implement a **Public Registration Form** applying a premium, vibrant UI design per your instructions.
+- Implement a **Leader Dashboard** that requires login credentials, featuring a data table displaying registered members.
+
+## Verification Plan
+### Automated Tests
+- We will locally test the endpoints utilizing standard curl/fetch commands or using `node` test scripts.
+
+### Manual Verification
+1. Open the React frontend (`http://localhost:5173`) in the browser.
+2. Fill out the registration form.
+3. Check the Node backend logs and the PostgreSQL database.
+4. Navigate to `/leader`, login, and observe the populated member table.
