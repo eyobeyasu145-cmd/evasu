@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const path = require('path');
 require('dotenv').config();
 
 const db = require('./db');
@@ -121,8 +122,11 @@ app.get('/api/members', authenticateToken, async (req, res) => {
           m.stream,
           m.education_year,
           m.phone_number,
+          m.family_id,
           f.family_name,
+          m.service_id,
           s.service_name,
+          m.leader_id,
           l.full_name AS leader_name,
           m.region,
           m.sub_city,
@@ -141,8 +145,139 @@ app.get('/api/members', authenticateToken, async (req, res) => {
     }
 });
 
+// Secured Route: Update a member's assignments
+app.put('/api/members/:id/assign', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { family_id, service_id, leader_id } = req.body;
+        const query = `
+            UPDATE members 
+            SET family_id = $1, service_id = $2, leader_id = $3
+            WHERE member_id = $4 RETURNING *;
+        `;
+        const result = await db.query(query, [family_id, service_id, leader_id, id]);
+        if (result.rows.length === 0) return res.status(404).json({ error: 'Member not found.' });
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Assign Member Error:', error);
+        res.status(500).json({ error: 'Failed to update member assignments.' });
+    }
+});
+
+// Secured Route: Get all families
+app.get('/api/families', authenticateToken, async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM family ORDER BY family_name');
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch families.' });
+    }
+});
+
+// Secured Route: Get all services
+app.get('/api/services', authenticateToken, async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM services ORDER BY service_name');
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch services.' });
+    }
+});
+
+// Secured Route: Get all leaders
+app.get('/api/leaders', authenticateToken, async (req, res) => {
+    try {
+        const query = `
+      SELECT 
+          l.leader_id,
+          l.full_name,
+          l.phone_number,
+          l.email,
+          l.is_active,
+          l.joined_date,
+          r.role_name
+      FROM leaders l
+      LEFT JOIN leadership_roles r ON l.role_id = r.role_id
+      ORDER BY l.joined_date DESC;
+    `;
+        const result = await db.query(query);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Fetch Leaders Error:', error);
+        res.status(500).json({ error: 'Failed to fetch leaders data.' });
+    }
+});
+
+// Secured Route: Get all leadership roles
+app.get('/api/roles', authenticateToken, async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM leadership_roles ORDER BY role_id');
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch roles.' });
+    }
+});
+
+// Secured Route: Add a new leader
+app.post('/api/leaders', authenticateToken, async (req, res) => {
+    try {
+        const { full_name, phone_number, email, role_id } = req.body;
+        const query = `
+            INSERT INTO leaders (full_name, phone_number, email, role_id)
+            VALUES ($1, $2, $3, $4) RETURNING *;
+        `;
+        const result = await db.query(query, [full_name, phone_number, email, role_id]);
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Add Leader Error:', error);
+        res.status(500).json({ error: 'Failed to add leader. Email or Phone might already exist.' });
+    }
+});
+
+// Secured Route: Update a leader
+app.put('/api/leaders/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { full_name, phone_number, email, role_id, is_active } = req.body;
+        const query = `
+            UPDATE leaders 
+            SET full_name = $1, phone_number = $2, email = $3, role_id = $4, is_active = $5
+            WHERE leader_id = $6 RETURNING *;
+        `;
+        const result = await db.query(query, [full_name, phone_number, email, role_id, is_active, id]);
+        if (result.rows.length === 0) return res.status(404).json({ error: 'Leader not found.' });
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Update Leader Error:', error);
+        res.status(500).json({ error: 'Failed to update leader.' });
+    }
+});
+
+// Secured Route: Delete a leader
+app.delete('/api/leaders/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await db.query('DELETE FROM leaders WHERE leader_id = $1 RETURNING *;', [id]);
+        if (result.rows.length === 0) return res.status(404).json({ error: 'Leader not found.' });
+        res.json({ message: 'Leader deleted safely.' });
+    } catch (error) {
+        console.error('Delete Leader Error:', error);
+        res.status(500).json({ error: 'Failed to delete leader. Usually due to constraint checks.' });
+    }
+});
+
+// Serve static files from the React app
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+    });
+}
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 // Trigger restart
+// Backend update
