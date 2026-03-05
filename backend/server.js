@@ -9,6 +9,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Verify Database Connection
+db.query('SELECT NOW()')
+    .then(res => console.log('✅ Connected to Database at:', res.rows[0].now))
+    .catch(err => console.error('❌ Database Connection Error:', err.message));
+
 // Public Route: Register Member
 app.post('/api/members/register', async (req, res) => {
     try {
@@ -110,5 +115,5 @@ app.get('/api/members', authenticateToken, async (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(\`Server is running on port \${PORT}\`);
+    console.log(`Server is running on port ${PORT}`);
 });

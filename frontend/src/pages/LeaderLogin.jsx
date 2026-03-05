@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Shield, Lock, Mail, ArrowLeft, AlertCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://127.0.0.1:5000/api';
 
 export default function LeaderLogin() {
     const [email, setEmail] = useState('');
