@@ -15,6 +15,11 @@ db.query('SELECT NOW()')
     .then(res => console.log('✅ Connected to Database at:', res.rows[0].now))
     .catch(err => console.error('❌ Database Connection Error:', err.message));
 
+// Health Check Route
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: "healthy", timestamp: new Date().toISOString() });
+});
+
 // Public Route: Register Member
 app.post('/api/members/register', async (req, res) => {
     try {
