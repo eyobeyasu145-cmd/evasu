@@ -241,3 +241,125 @@ a:hover {
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+
+/* Form Step styles */
+.form-progress {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+  position: relative;
+}
+
+.form-progress::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--border-color);
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.progress-bar-fill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 2px;
+  background: var(--primary-color);
+  transform: translateY(-50%);
+  z-index: 2;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.step-indicator {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--text-secondary);
+  position: relative;
+  z-index: 3;
+  transition: all 0.3s ease;
+}
+
+.step-indicator.active {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.step-indicator.completed {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.form-step-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.form-step {
+  transition: all 0.3s ease-in-out;
+}
+
+.form-field-error {
+  font-size: 0.75rem;
+  color: var(--error);
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.form-input.invalid {
+  border-color: var(--error);
+}
+
+.form-input.invalid:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-ghost:hover {
+  background: #f1f5f9;
+  color: var(--text-primary);
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.summary-card {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-color);
+  margin-top: 1rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+}

@@ -1,34 +1,79 @@
 import React, { useState } from 'react';
-import { UserPlus, Shield, CheckCircle2, AlertCircle, Phone, Fingerprint, MapPin, GraduationCap } from 'lucide-react';
+import {
+    UserPlus, Shield, CheckCircle2, AlertCircle, Phone,
+    Fingerprint, MapPin, GraduationCap, ChevronRight,
+    ChevronLeft, Check, ClipboardCheck
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import evasuLogo from '../assets/evasu.jpg';
 
 const API_URL = import.meta.env.PROD ? '/api' : 'http://127.0.0.1:5000/api';
 
+const STEPS = [
+    { id: 1, title: 'Personal', icon: UserPlus },
+    { id: 2, title: 'Campus', icon: MapPin },
+    { id: 3, title: 'Academic', icon: GraduationCap },
+    { id: 4, title: 'Review', icon: ClipboardCheck }
+];
+
 export default function Register() {
+    const [currentStep, setCurrentStep] = useState(1);
     const [formData, setFormData] = useState({
         full_name: '', university_id: '', dorm: '', block: '', stream: '',
         section_id: '', region: '', sub_city: '', sex: 'Male',
         education_year: 'Freshman', phone_number: ''
     });
+    const [errors, setErrors] = useState({});
     const [status, setStatus] = useState({ type: '', message: '' });
     const [loading, setLoading] = useState(false);
 
+    const validateStep = (step) => {
+        const newErrors = {};
+        if (step === 1) {
+            if (!formData.full_name) newErrors.full_name = 'Full name is required';
+            if (!formData.phone_number) newErrors.phone_number = 'Phone number is required';
+            else if (!/^\d{10}$/.test(formData.phone_number.replace(/\s/g, ''))) {
+                newErrors.phone_number = 'Enter a valid 10-digit phone number';
+            }
+        } else if (step === 2) {
+            if (!formData.university_id) newErrors.university_id = 'University ID is required';
+            if (!formData.dorm) newErrors.dorm = 'Dorm name is required';
+            if (!formData.block) newErrors.block = 'Block number is required';
+        } else if (step === 3) {
+            if (!formData.stream) newErrors.stream = 'Stream/Department is required';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const nextStep = () => {
+        if (validateStep(currentStep)) {
+            setCurrentStep(prev => Math.min(prev + 1, STEPS.length));
+        }
+    };
+
+    const prevStep = () => {
+        setCurrentStep(prev => Math.max(prev - 1, 1));
+    };
+
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        if (errors[name]) {
+            setErrors({ ...errors, [name]: '' });
+        }
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         setLoading(true);
         setStatus({ type: '', message: '' });
 
         try {
             const response = await fetch(`${API_URL}/members/register`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
 
@@ -36,132 +81,152 @@ export default function Register() {
 
             if (response.ok) {
                 setStatus({ type: 'success', message: 'Registration successful! Welcome to EVASU.' });
-                setFormData({
-                    full_name: '', university_id: '', dorm: '', block: '', stream: '',
-                    section_id: '', region: '', sub_city: '', sex: 'Male',
-                    education_year: 'Freshman', phone_number: ''
-                });
+                // Reset form and go back to step 1 after delay
+                setTimeout(() => {
+                    setFormData({
+                        full_name: '', university_id: '', dorm: '', block: '', stream: '',
+                        section_id: '', region: '', sub_city: '', sex: 'Male',
+                        education_year: 'Freshman', phone_number: ''
+                    });
+                    setCurrentStep(1);
+                    setStatus({ type: '', message: '' });
+                }, 5000);
             } else {
                 setStatus({ type: 'error', message: data.error || 'Registration failed.' });
+                setCurrentStep(4); // Keep them on review step to see error
             }
         } catch (error) {
-            console.error(error);
             setStatus({ type: 'error', message: 'Connection error. Please try again later.' });
         } finally {
             setLoading(false);
         }
     };
 
+    const renderField = (label, name, type = 'text', placeholder = '', options = null) => (
+        <div className="form-group">
+            <label className="form-label">{label}</label>
+            {options ? (
+                <select name={name} value={formData[name]} onChange={handleChange} className={`form-select ${errors[name] ? 'invalid' : ''}`}>
+                    {options.map(opt => <option key={opt.value || opt} value={opt.value || opt}>{opt.label || opt}</option>)}
+                </select>
+            ) : (
+                <input
+                    type={type}
+                    name={name}
+                    value={formData[name]}
+                    onChange={handleChange}
+                    className={`form-input ${errors[name] ? 'invalid' : ''}`}
+                    placeholder={placeholder}
+                />
+            )}
+            {errors[name] && <span className="form-field-error">{errors[name]}</span>}
+        </div>
+    );
+
     return (
         <div className="dynamic-gradient-bg">
-            <div className="form-container" style={{ position: 'relative' }}>
+            <div className="form-container animate-fade-in">
                 <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem' }}>
-                    <Link to="/leader-login" className="btn" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <Shield size={16} /> Leader Access
+                    <Link to="/leader-login" className="btn btn-ghost" style={{ fontSize: '0.875rem' }}>
+                        <Shield size={16} style={{ marginRight: '0.5rem' }} /> Leader login
                     </Link>
                 </div>
 
-                <div className="text-center mb-6">
-                    <img
-                        src={evasuLogo}
-                        alt="EVASU Logo"
-                        style={{
-                            width: '100px',
-                            height: '100px',
-                            borderRadius: '50%',
-                            objectFit: 'cover',
-                            border: '4px solid white',
-                            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                            marginBottom: '1rem'
-                        }}
-                    />
-                    <h1>EVASU Community</h1>
-                    <p style={{ color: 'var(--text-secondary)' }}>Welcome to the official registration portal.</p>
+                <div className="text-center mb-8">
+                    <img src={evasuLogo} alt="Logo" style={{ width: '80px', height: '80px', borderRadius: '50%', marginBottom: '1rem', border: '3px solid white', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }} />
+                    <h1 className="mb-2">EVASU Registration</h1>
+                    <p style={{ color: 'var(--text-secondary)' }}>Step {currentStep} of {STEPS.length}: {STEPS[currentStep - 1].title}</p>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="form-progress">
+                    <div className="progress-bar-fill" style={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}></div>
+                    {STEPS.map(step => (
+                        <div key={step.id} className={`step-indicator ${currentStep >= step.id ? 'active' : ''} ${currentStep > step.id ? 'completed' : ''}`}>
+                            {currentStep > step.id ? <Check size={16} /> : <step.icon size={16} />}
+                        </div>
+                    ))}
                 </div>
 
                 {status.message && (
-                    <div className="mb-6" style={{ padding: '1rem', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: status.type === 'success' ? '#dcfce7' : '#fee2e2', color: status.type === 'success' ? 'var(--success)' : 'var(--error)' }}>
-                        {status.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
+                    <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 animate-fade-in ${status.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}
+                        style={{ backgroundColor: status.type === 'success' ? '#dcfce7' : '#fee2e2', color: status.type === 'success' ? '#166534' : '#991b1b' }}>
+                        {status.type === 'success' ? <CheckCircle2 size={24} /> : <AlertCircle size={24} />}
                         <span className="font-semibold">{status.message}</span>
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit}>
-                    <div className="form-grid">
-                        <div className="form-group">
-                            <label className="form-label">Full Name</label>
-                            <input type="text" name="full_name" value={formData.full_name} onChange={handleChange} className="form-input" required placeholder="John Doe" />
+                <div className="form-step-container">
+                    {currentStep === 1 && (
+                        <div className="form-step animate-fade-in">
+                            <div className="form-grid">
+                                {renderField('Full Name', 'full_name', 'text', 'John Doe')}
+                                {renderField('Gender', 'sex', 'select', '', ['Male', 'Female'])}
+                            </div>
+                            <div className="form-grid">
+                                {renderField('Region', 'region', 'text', 'Oromia')}
+                                {renderField('Sub City / Zone', 'sub_city', 'text', 'Addis Ababa')}
+                            </div>
+                            {renderField('Phone Number', 'phone_number', 'tel', '0912345678')}
                         </div>
-                        <div className="form-group">
-                            <label className="form-label">University ID</label>
-                            <input type="text" name="university_id" value={formData.university_id} onChange={handleChange} className="form-input" required placeholder="DU12345" />
-                        </div>
-                    </div>
+                    )}
 
-                    <div className="form-grid">
-                        <div className="form-group">
-                            <label className="form-label">Dorm Name</label>
-                            <input type="text" name="dorm" value={formData.dorm} onChange={handleChange} className="form-input" required placeholder="e.g. Dorm A" />
+                    {currentStep === 2 && (
+                        <div className="form-step animate-fade-in">
+                            {renderField('University ID', 'university_id', 'text', 'DU12345')}
+                            <div className="form-grid">
+                                {renderField('Dorm Name', 'dorm', 'text', 'Dorm A')}
+                                {renderField('Block Number', 'block', 'text', '3')}
+                            </div>
                         </div>
-                        <div className="form-group">
-                            <label className="form-label">Block Number</label>
-                            <input type="text" name="block" value={formData.block} onChange={handleChange} className="form-input" required placeholder="e.g. Block 3" />
-                        </div>
-                    </div>
+                    )}
 
-                    <div className="form-grid">
-                        <div className="form-group">
-                            <label className="form-label">Stream (Department)</label>
-                            <input type="text" name="stream" value={formData.stream} onChange={handleChange} className="form-input" required placeholder="Computer Science" />
+                    {currentStep === 3 && (
+                        <div className="form-step animate-fade-in">
+                            {renderField('Stream (Department)', 'stream', 'text', 'Computer Science')}
+                            <div className="form-grid">
+                                {renderField('Section ID', 'section_id', 'number', '1')}
+                                {renderField('Education Year', 'education_year', 'select', '', [
+                                    'Remedial', 'Freshman', '2nd', '3rd', '4th', '5th', 'GC'
+                                ])}
+                            </div>
                         </div>
-                        <div className="form-group">
-                            <label className="form-label">Section ID</label>
-                            <input type="number" name="section_id" value={formData.section_id} onChange={handleChange} className="form-input" placeholder="e.g. 1" />
-                        </div>
-                    </div>
+                    )}
 
-                    <div className="form-grid">
-                        <div className="form-group">
-                            <label className="form-label">Gender (Sex)</label>
-                            <select name="sex" value={formData.sex} onChange={handleChange} className="form-select">
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                            </select>
+                    {currentStep === 4 && (
+                        <div className="form-step animate-fade-in">
+                            <h3 className="text-sm font-semibold mb-4 text-secondary">Please review your information</h3>
+                            <div className="summary-card">
+                                <div className="summary-row"><strong>Name:</strong> <span>{formData.full_name}</span></div>
+                                <div className="summary-row"><strong>ID:</strong> <span>{formData.university_id}</span></div>
+                                <div className="summary-row"><strong>Stream:</strong> <span>{formData.stream}</span></div>
+                                <div className="summary-row"><strong>Phone:</strong> <span>{formData.phone_number}</span></div>
+                                <div className="summary-row"><strong>Dorm:</strong> <span>{formData.dorm} (Block {formData.block})</span></div>
+                            </div>
+                            <p className="mt-4 text-sm text-secondary">By clicking complete, you agree to join the EVASU community.</p>
                         </div>
-                        <div className="form-group">
-                            <label className="form-label">Education Year</label>
-                            <select name="education_year" value={formData.education_year} onChange={handleChange} className="form-select">
-                                <option value="Remedial">Remedial</option>
-                                <option value="Freshman">Freshman</option>
-                                <option value="2nd">2nd Year</option>
-                                <option value="3rd">3rd Year</option>
-                                <option value="4th">4th Year</option>
-                                <option value="5th">5th Year</option>
-                                <option value="GC">Graduate Class (GC)</option>
-                            </select>
-                        </div>
-                    </div>
+                    )}
+                </div>
 
-                    <div className="form-grid">
-                        <div className="form-group">
-                            <label className="form-label">Region</label>
-                            <input type="text" name="region" value={formData.region} onChange={handleChange} className="form-input" placeholder="Oromia, Amhara, etc." />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Sub City / Zone</label>
-                            <input type="text" name="sub_city" value={formData.sub_city} onChange={handleChange} className="form-input" placeholder="Dire Dawa, etc." />
-                        </div>
-                    </div>
+                <div className="flex gap-4 mt-8">
+                    {currentStep > 1 && status.type !== 'success' && (
+                        <button onClick={prevStep} className="btn btn-ghost flex-1">
+                            <ChevronLeft size={18} style={{ marginRight: '0.5rem' }} /> Back
+                        </button>
+                    )}
 
-                    <div className="form-group">
-                        <label className="form-label">Phone Number</label>
-                        <input type="tel" name="phone_number" value={formData.phone_number} onChange={handleChange} className="form-input" required placeholder="0912345678" />
-                    </div>
-
-                    <button type="submit" className="btn btn-primary w-full mt-4" disabled={loading}>
-                        {loading ? 'Submitting Registration...' : 'Complete Registration'}
-                    </button>
-                </form>
+                    {currentStep < STEPS.length ? (
+                        <button onClick={nextStep} className="btn btn-primary flex-1">
+                            Next Step <ChevronRight size={18} style={{ marginLeft: '0.5rem' }} />
+                        </button>
+                    ) : (
+                        status.type !== 'success' && (
+                            <button onClick={handleSubmit} className="btn btn-primary flex-1" disabled={loading}>
+                                {loading ? 'Processing...' : 'Complete Registration'}
+                            </button>
+                        )
+                    )}
+                </div>
             </div>
         </div>
     );

@@ -41,24 +41,32 @@ export default function LeaderLogin() {
 
     return (
         <div className="dynamic-gradient-bg" style={{ animationDuration: '20s' }}>
-            <div className="form-container" style={{ maxWidth: '400px', position: 'relative' }}>
+            <div className="form-container animate-fade-in" style={{ maxWidth: '400px', position: 'relative' }}>
                 <div style={{ position: 'absolute', top: '1.5rem', left: '1.5rem' }}>
-                    <Link to="/" className="btn" style={{ padding: '0', color: 'var(--text-secondary)' }}>
-                        <ArrowLeft size={20} />
+                    <Link to="/" className="btn btn-ghost" style={{ padding: '0.5rem', borderRadius: '50%', color: 'var(--text-secondary)' }}>
+                        <ArrowLeft size={18} />
                     </Link>
                 </div>
 
-                <div className="text-center mb-6 mt-4">
-                    <div style={{ display: 'inline-flex', padding: '1rem', background: '#0f172a', borderRadius: '50%', color: 'white', marginBottom: '1rem' }}>
+                <div className="text-center mb-8 mt-4">
+                    <div style={{
+                        display: 'inline-flex',
+                        padding: '1.25rem',
+                        background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+                        borderRadius: '1.25rem',
+                        color: 'white',
+                        marginBottom: '1.25rem',
+                        boxShadow: '0 10px 15px -3px rgba(15, 23, 42, 0.3)'
+                    }}>
                         <Shield size={32} />
                     </div>
-                    <h2>Leader Portal</h2>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Secure access to member management.</p>
+                    <h2 className="mb-2">Leader Portal</h2>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Secure authorization for community administration.</p>
                 </div>
 
                 {error && (
-                    <div className="mb-6" style={{ padding: '0.75rem', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#fee2e2', color: 'var(--error)' }}>
-                        <AlertCircle size={18} />
+                    <div className="mb-6 p-4 rounded-lg flex items-center gap-3 animate-fade-in" style={{ backgroundColor: '#fee2e2', color: '#991b1b' }}>
+                        <AlertCircle size={20} />
                         <span className="font-semibold text-sm">{error}</span>
                     </div>
                 )}
@@ -74,11 +82,11 @@ export default function LeaderLogin() {
                             onChange={(e) => setEmail(e.target.value)}
                             className="form-input"
                             required
-                            placeholder="admin@evasu.org"
+                            placeholder="leader@evasu.org"
                         />
                     </div>
 
-                    <div className="form-group mb-6">
+                    <div className="form-group mb-8">
                         <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <Lock size={16} /> Password
                         </label>
@@ -92,9 +100,13 @@ export default function LeaderLogin() {
                         />
                     </div>
 
-                    <button type="submit" className="btn btn-primary w-full" disabled={loading} style={{ background: '#0f172a' }}>
-                        {loading ? 'Authenticating...' : 'Secure Authorization'}
+                    <button type="submit" className="btn btn-primary w-full" disabled={loading} style={{ background: '#0f172a', py: '1rem' }}>
+                        {loading ? 'Authenticating...' : 'Sign In to Dashboard'}
                     </button>
+
+                    <p className="text-center mt-6 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                        Restricted access. Authorized personnel only.
+                    </p>
                 </form>
             </div>
         </div>

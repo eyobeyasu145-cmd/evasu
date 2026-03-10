@@ -164,17 +164,28 @@ export default function Dashboard() {
             {editingMember && (
                 <div style={{
                     position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    backgroundColor: 'rgba(15, 23, 42, 0.4)', zIndex: 1000,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    backdropFilter: 'blur(8px)'
                 }}>
-                    <div className="form-container" style={{ maxWidth: '500px', padding: '2rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                            <h2 style={{ margin: 0 }}>Assign Roles to {editingMember.full_name}</h2>
-                            <button onClick={() => setEditingMember(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20} /></button>
+                    <div className="form-container animate-fade-in" style={{ maxWidth: '500px', padding: '2.5rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                <div style={{ padding: '0.5rem', background: 'var(--primary-color)', borderRadius: '0.5rem', color: 'white' }}>
+                                    <UserCog size={20} />
+                                </div>
+                                <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Assign Roles</h2>
+                            </div>
+                            <button onClick={() => setEditingMember(null)} className="btn btn-ghost" style={{ padding: '0.5rem', borderRadius: '50%' }}>
+                                <X size={20} />
+                            </button>
                         </div>
+
+                        <p className="mb-6 text-sm text-secondary">Updating assignments for <strong>{editingMember.full_name}</strong> (ID: {editingMember.member_id})</p>
+
                         <form onSubmit={handleAssignSubmit}>
                             <div className="form-group">
-                                <label className="form-label">Assign Family</label>
+                                <label className="form-label">Church Family</label>
                                 <select
                                     className="form-select"
                                     value={assignForm.family_id}
@@ -185,7 +196,7 @@ export default function Dashboard() {
                                 </select>
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Assign Service</label>
+                                <label className="form-label">Service Department</label>
                                 <select
                                     className="form-select"
                                     value={assignForm.service_id}
@@ -195,8 +206,8 @@ export default function Dashboard() {
                                     {services.map(s => <option key={s.id} value={s.id}>{s.service_name}</option>)}
                                 </select>
                             </div>
-                            <div className="form-group">
-                                <label className="form-label">Assign Leader</label>
+                            <div className="form-group mb-8">
+                                <label className="form-label">Assigned Leader</label>
                                 <select
                                     className="form-select"
                                     value={assignForm.leader_id}
@@ -206,9 +217,9 @@ export default function Dashboard() {
                                     {leaders.map(l => <option key={l.leader_id} value={l.leader_id}>{l.full_name} ({l.email})</option>)}
                                 </select>
                             </div>
-                            <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-                                <button type="button" className="btn w-full" style={{ backgroundColor: '#f1f5f9' }} onClick={() => setEditingMember(null)}>Cancel</button>
-                                <button type="submit" className="btn btn-primary w-full">Save Assignment</button>
+                            <div className="flex gap-4">
+                                <button type="button" className="btn btn-ghost flex-1" onClick={() => setEditingMember(null)}>Cancel</button>
+                                <button type="submit" className="btn btn-primary flex-1">Save Changes</button>
                             </div>
                         </form>
                     </div>
