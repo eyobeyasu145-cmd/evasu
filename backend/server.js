@@ -13,7 +13,7 @@ app.use(express.json());
 // Verify Database Connection
 db.query('SELECT NOW()')
     .then(res => console.log('✅ Connected to Database at:', res.rows[0].now))
-    .catch(err => console.error('❌ Database Connection Error:', err.message));
+    .catch(err => console.error('❌ Database Connection Error:', err));
 
 // Health Check Route
 app.get('/api/health', (req, res) => {
