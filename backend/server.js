@@ -10,6 +10,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Environment Verification
+console.log('--- Environment Check ---');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('DATABASE_URL present:', !!process.env.DATABASE_URL);
+console.log('STATIC_PATH:', path.join(__dirname, '../frontend/dist'));
+console.log('-------------------------');
+
 // Basic Root Route for verification
 app.get('/', (req, res) => {
     if (process.env.NODE_ENV === 'production') {
