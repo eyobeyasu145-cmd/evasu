@@ -20,9 +20,15 @@ app.get('/', (req, res) => {
 });
 
 // Verify Database Connection
+console.log('Attempting to connect to database...');
 db.query('SELECT NOW()')
     .then(res => console.log('✅ Connected to Database at:', res.rows[0].now))
-    .catch(err => console.error('❌ Database Connection Error:', err));
+    .catch(err => {
+        console.error('❌ Database Connection Error details:');
+        console.error('- Message:', err.message);
+        console.error('- Code:', err.code);
+        console.error('- Host/Port:', err.address, ':', err.port);
+    });
 
 // Health Check Route
 app.get('/api/health', (req, res) => {
