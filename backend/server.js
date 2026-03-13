@@ -10,6 +10,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Basic Root Route for verification
+app.get('/', (req, res) => {
+    if (process.env.NODE_ENV === 'production') {
+        res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+    } else {
+        res.status(200).json({ message: "Evasu Backend is running!" });
+    }
+});
+
 // Verify Database Connection
 db.query('SELECT NOW()')
     .then(res => console.log('✅ Connected to Database at:', res.rows[0].now))
