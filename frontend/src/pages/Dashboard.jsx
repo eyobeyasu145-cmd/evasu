@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Users, ShieldAlert, LogOut, Loader2, PenSquare, Trash2, Check, X, UserCog } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const API_URL = import.meta.env.PROD ? '/api' : 'http://127.0.0.1:5000/api';
+const API_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') 
+    ? (import.meta.env.PROD ? '/api' : 'http://127.0.0.1:5000/api')
+    : '/api';
 
 export default function Dashboard() {
     const [activeTab, setActiveTab] = useState('members');
@@ -65,7 +67,10 @@ export default function Dashboard() {
             const data = await response.json();
             if (response.ok) setMembers(data);
             else setError(data.error || 'Failed to fetch members');
-        } catch (err) { setError('Connection error'); }
+        } catch (err) { 
+            console.error('Connection Error:', err);
+            setError('Connection error'); 
+        }
         finally { setLoading(false); }
     };
 
@@ -88,7 +93,10 @@ export default function Dashboard() {
             } else {
                 setError('Failed to fetch leaders data');
             }
-        } catch (err) { setError('Connection error'); }
+        } catch (err) { 
+            console.error('Connection Error:', err);
+            setError('Connection error'); 
+        }
         finally { setLoading(false); }
     };
 

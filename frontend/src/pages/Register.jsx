@@ -7,7 +7,9 @@ import {
 import { Link } from 'react-router-dom';
 import evasuLogo from '../assets/evasu.jpg';
 
-const API_URL = import.meta.env.PROD ? '/api' : 'http://127.0.0.1:5000/api';
+const API_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') 
+    ? (import.meta.env.PROD ? '/api' : 'http://127.0.0.1:5000/api')
+    : '/api';
 
 const STEPS = [
     { id: 1, title: 'Personal', icon: UserPlus },
@@ -96,6 +98,7 @@ export default function Register() {
                 setCurrentStep(4); // Keep them on review step to see error
             }
         } catch (error) {
+            console.error('Registration Fetch Error:', error);
             setStatus({ type: 'error', message: 'Connection error. Please try again later.' });
         } finally {
             setLoading(false);
