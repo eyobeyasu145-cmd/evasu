@@ -240,7 +240,7 @@ export default function Dashboard() {
                     <div style={{ padding: '0.5rem', background: 'var(--primary-color)', borderRadius: '0.5rem', color: 'white' }}>
                         <ShieldAlert size={24} />
                     </div>
-                    <h2 style={{ margin: 0, fontSize: '1.25rem' }}>EVASU Admin</h2>
+                    <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Dire Dawa EVASU</h2>
                 </div>
 
                 <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -270,7 +270,7 @@ export default function Dashboard() {
                 <header className="glass-header" style={{ borderRadius: '1rem', marginBottom: '2rem' }}>
                     <div>
                         <h1 style={{ margin: 0, fontSize: '1.5rem' }}>
-                            {activeTab === 'members' ? 'Members Directory' : 'Leaders Administration'}
+                            {activeTab === 'members' ? 'Dire Dawa Members' : 'Dire Dawa Administration'}
                         </h1>
                         <p className="text-sm text-secondary" style={{ margin: 0 }}>
                             {activeTab === 'members' ? 'View and manage all registered members and their assignments.' : 'Manage system administrators and group leaders.'}
