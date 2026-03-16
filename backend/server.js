@@ -103,16 +103,29 @@ app.post('/api/members/register', async (req, res) => {
 // but in production it should query the leaders table with hashed passwords
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
-    // Let's assume the default leader is admin@evasu.org / Unit12phy
-    if (email === 'admin@evasu.org' && password === process.env.DB_PASSWORD) {
+
+    // Environment Variables (Loaded from .env or Render dashboard)
+    const adminEmail = process.env.ADMIN_EMAIL || 'famcoorsinan@evasu.org';
+    const adminPass = process.env.ADMIN_PASSWORD || 'familycoordinatersinan';
+
+    const loginEmail = email?.trim().toLowerCase();
+    const loginPass = password?.trim();
+
+    console.log('--- Login Debug ---');
+    console.log(`Input Email: "${loginEmail}"`);
+    console.log(`Admin Email (Expected): "${adminEmail.toLowerCase()}"`);
+    console.log(`Email Match: ${loginEmail === adminEmail.toLowerCase()}`);
+    console.log(`Password Match: ${loginPass === adminPass}`);
+    console.log('-------------------');
+
+    if (loginEmail === adminEmail.toLowerCase() && loginPass === adminPass) {
         const token = jwt.sign({ role: 'leader' }, process.env.JWT_SECRET, { expiresIn: '1d' });
         return res.json({ message: 'Login successful', token });
     }
 
-    // Alternatively, try to find a leader by email and use DB_PASSWORD as universal password for now
     try {
-        const leaderResult = await db.query('SELECT * FROM leaders WHERE email = $1', [email]);
-        if (leaderResult.rows.length > 0 && password === process.env.DB_PASSWORD) {
+        const leaderResult = await db.query('SELECT * FROM leaders WHERE LOWER(email) = $1', [loginEmail]);
+        if (leaderResult.rows.length > 0 && loginPass === adminPass) {
             const leader = leaderResult.rows[0];
             const token = jwt.sign({ id: leader.leader_id, role: 'leader' }, process.env.JWT_SECRET, { expiresIn: '1d' });
             return res.json({ message: 'Login successful', token, leader });
