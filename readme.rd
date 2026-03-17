@@ -44,9 +44,9 @@ A protected dashboard for leaders and structured roles:
 
 ```env
 #DB_HOST=localhost
-DB_NAME=evasu
+DB_NAME=*****
 DB_USER=postges
-DB_PASSWORD=Unit12phy
+DB_PASSWORD=*****
 DB_PORT=5432
 ```
 
