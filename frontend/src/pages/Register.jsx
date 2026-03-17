@@ -129,16 +129,18 @@ export default function Register() {
     return (
         <div className="dynamic-gradient-bg">
             <div className="form-container animate-fade-in">
-                <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem' }}>
-                    <Link to="/leader-login" className="btn btn-ghost" style={{ fontSize: '0.875rem' }}>
-                        <Shield size={16} style={{ marginRight: '0.5rem' }} /> Leader login
-                    </Link>
-                </div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+                        <Link to="/leader-login" className="btn btn-ghost" style={{ fontSize: '0.875rem' }}>
+                            <Shield size={16} style={{ marginRight: '0.5rem' }} /> Leader login
+                        </Link>
+                    </div>
 
-                <div className="text-center mb-8">
-                    <img src={evasuLogo} alt="Logo" style={{ width: '80px', height: '80px', borderRadius: '50%', marginBottom: '1rem', border: '3px solid white', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }} />
-                    <h1 className="mb-2">Dire Dawa EVASU Registration</h1>
-                    <p style={{ color: 'var(--text-secondary)' }}>Step {currentStep} of {STEPS.length}: {STEPS[currentStep - 1].title}</p>
+                    <div className="text-center mb-8">
+                        <img src={evasuLogo} alt="Logo" style={{ width: '80px', height: '80px', borderRadius: '50%', marginBottom: '1rem', border: '3px solid white', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }} />
+                        <h1 className="mb-2" style={{ fontSize: 'clamp(1.25rem, 5vw, 2rem)' }}>Dire Dawa EVASU Registration</h1>
+                        <p style={{ color: 'var(--text-secondary)' }}>Step {currentStep} of {STEPS.length}: {STEPS[currentStep - 1].title}</p>
+                    </div>
                 </div>
 
                 {/* Progress Bar */}

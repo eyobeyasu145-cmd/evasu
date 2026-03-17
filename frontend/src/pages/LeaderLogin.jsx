@@ -41,8 +41,8 @@ export default function LeaderLogin() {
 
     return (
         <div className="dynamic-gradient-bg" style={{ animationDuration: '20s' }}>
-            <div className="form-container animate-fade-in" style={{ maxWidth: '400px', position: 'relative' }}>
-                <div style={{ position: 'absolute', top: '1.5rem', left: '1.5rem' }}>
+            <div className="form-container animate-fade-in" style={{ maxWidth: '400px' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '1rem' }}>
                     <Link to="/" className="btn btn-ghost" style={{ padding: '0.5rem', borderRadius: '50%', color: 'var(--text-secondary)' }}>
                         <ArrowLeft size={18} />
                     </Link>

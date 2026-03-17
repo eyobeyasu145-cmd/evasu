@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Users, ShieldAlert, LogOut, Loader2, PenSquare, Trash2, Check, X, UserCog } from 'lucide-react';
+import { Users, ShieldAlert, LogOut, Loader2, PenSquare, Trash2, Check, X, UserCog, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const API_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') 
@@ -20,6 +20,7 @@ export default function Dashboard() {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -167,7 +168,15 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="main-layout" style={{ position: 'relative' }}>
+        <div className="main-layout">
+            {/* Mobile Sidebar Overlay */}
+            {sidebarOpen && (
+                <div 
+                    className="sidebar-overlay" 
+                    onClick={() => setSidebarOpen(false)}
+                ></div>
+            )}
+
             {/* Assignment Modal Overlay */}
             {editingMember && (
                 <div style={{
@@ -235,24 +244,39 @@ export default function Dashboard() {
             )}
 
             {/* Sidebar */}
-            <div className="sidebar">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '3rem' }}>
-                    <div style={{ padding: '0.5rem', background: 'var(--primary-color)', borderRadius: '0.5rem', color: 'white' }}>
-                        <ShieldAlert size={24} />
+            <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '3rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div style={{ padding: '0.5rem', background: 'var(--primary-color)', borderRadius: '0.5rem', color: 'white' }}>
+                            <ShieldAlert size={24} />
+                        </div>
+                        <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Dire Dawa EVASU</h2>
                     </div>
-                    <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Dire Dawa EVASU</h2>
+                    {/* Close button for mobile */}
+                    <button 
+                        className="btn md-hidden" 
+                        onClick={() => setSidebarOpen(false)}
+                        style={{ display: 'none', padding: '0.5rem', background: 'transparent' }}
+                    >
+                        <X size={24} />
+                    </button>
+                    <style>{`
+                        @media (max-width: 1024px) {
+                            .md-hidden { display: block !important; }
+                        }
+                    `}</style>
                 </div>
 
                 <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <button
-                        onClick={() => setActiveTab('members')}
+                        onClick={() => { setActiveTab('members'); setSidebarOpen(false); }}
                         className="btn w-full"
                         style={{ justifyContent: 'flex-start', backgroundColor: activeTab === 'members' ? '#e0e7ff' : 'transparent', color: activeTab === 'members' ? 'var(--primary-color)' : 'var(--text-secondary)' }}
                     >
                         <Users size={18} style={{ marginRight: '0.5rem' }} /> Members List
                     </button>
                     <button
-                        onClick={() => setActiveTab('leaders')}
+                        onClick={() => { setActiveTab('leaders'); setSidebarOpen(false); }}
                         className="btn w-full"
                         style={{ justifyContent: 'flex-start', backgroundColor: activeTab === 'leaders' ? '#e0e7ff' : 'transparent', color: activeTab === 'leaders' ? 'var(--primary-color)' : 'var(--text-secondary)' }}
                     >
@@ -268,13 +292,22 @@ export default function Dashboard() {
             {/* Main Content */}
             <div className="content-area">
                 <header className="glass-header" style={{ borderRadius: '1rem', marginBottom: '2rem' }}>
-                    <div>
-                        <h1 style={{ margin: 0, fontSize: '1.5rem' }}>
-                            {activeTab === 'members' ? 'Dire Dawa Members' : 'Dire Dawa Administration'}
-                        </h1>
-                        <p className="text-sm text-secondary" style={{ margin: 0 }}>
-                            {activeTab === 'members' ? 'View and manage all registered members and their assignments.' : 'Manage system administrators and group leaders.'}
-                        </p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <button 
+                            className="btn md-hidden" 
+                            onClick={() => setSidebarOpen(true)}
+                            style={{ display: 'none', padding: '0.5rem', background: '#f1f5f9', borderRadius: '0.5rem' }}
+                        >
+                            <Menu size={20} />
+                        </button>
+                        <div>
+                            <h1 style={{ margin: 0, fontSize: '1.5rem' }}>
+                                {activeTab === 'members' ? 'Dire Dawa Members' : 'Dire Dawa Administration'}
+                            </h1>
+                            <p className="text-sm text-secondary" style={{ margin: 0 }}>
+                                {activeTab === 'members' ? 'View and manage all registered members and their assignments.' : 'Manage system administrators and group leaders.'}
+                            </p>
+                        </div>
                     </div>
                     <div style={{ padding: '0.5rem 1rem', background: '#f1f5f9', borderRadius: '2rem', fontSize: '0.875rem', fontWeight: 600 }}>
                         Total {activeTab === 'members' ? 'Registered' : 'Leaders'}: {activeTab === 'members' ? members.length : leaders.length}
